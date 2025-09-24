@@ -1,0 +1,38 @@
+# Системные файлы операционных систем
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Файлы редакторов/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Логи и временные файлы
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Файлы зависимостей (если будете добавлять)
+node_modules/
+bower_components/
+
+# Сборки и артефакты
+dist/
+build/
+*.tmp
+*.temp
+
+# Файлы окружения (с чувствительными данными)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Резервные копии
+*.bak
+*.backup
