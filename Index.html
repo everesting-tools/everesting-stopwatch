@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секундомер для эверестинга</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Секундомер для эверестинга</h1>
+    
+    <div class="instructions">
+        <button class="toggle-instructions"></button>
+        <div class="instructions-content">
+            <h3>Инструкция:</h3>
+            <ul>
+                <li><strong>Пуск/круг</strong> - запускает отсчёт. Повторные нажатия фиксируют время круга и начинают новый круг</li>
+                <li><strong>Пауза</strong> - включает/выключает паузу. Время паузы входит в общее время круга, но отсчёт времени круга не останавливается</li>
+                <li><strong>Финиш</strong> - останавливает все секундомеры и сохраняет лог тренировки (активируется тройным нажатием)</li>
+                <li><strong>Сброс</strong> - очищает все данные (активируется тройным нажатием когда секундомер остановлен)</li>
+            </ul>
+            <p><em>После финиша автоматически сохраняется файл с логом тренировки в формате UTF-8</em></p>
+        </div>
+    </div>
+    
+    <div class="timer-display">
+        <div>Общее время: <span id="total-time">00:00:00</span></div>
+        <div>Текущий круг: <span id="lap-time">00:00:00</span></div>
+        <div>Пауза: <span id="pause-time">00:00:00</span></div>
+    </div>
+    
+    <div class="status-indicator">
+        <div class="status-item">
+            <div class="status-dot stopped" id="total-status"></div>
+            <span>Общее время</span>
+        </div>
+        <div class="status-item">
+            <div class="status-dot stopped" id="lap-status"></div>
+            <span>Текущий круг</span>
+        </div>
+        <div class="status-item">
+            <div class="status-dot stopped" id="pause-status"></div>
+            <span>Пауза</span>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="btn-start" class="btn-start">Пуск/круг</button>
+        <button id="btn-pause" class="btn-pause" disabled>Пауза</button>
+        <button id="btn-finish" class="btn-finish" disabled>Финиш</button>
+        <button id="btn-reset" class="btn-reset" disabled>Сброс</button>
+    </div>
+    
+    <div id="finish-indicator" class="action-indicator" style="display: none;">
+        Нажмите еще <span id="finish-count">2</span> раза для финиша
+    </div>
+    
+    <div id="reset-indicator" class="action-indicator" style="display: none;">
+        Нажмите еще <span id="reset-count">2</span> раза для сброса
+    </div>
+    
+    <div class="table-container">
+        <table id="results-table">
+            <thead>
+                <tr>
+                    <th>Круг</th>
+                    <th>Время круга</th>
+                    <th>Пауза</th>
+                    <th>Чистое время</th>
+                    <th>Общее время</th>
+                </tr>
+            </thead>
+            <tbody id="results-body">
+                <!-- Данные будут добавляться здесь -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="summary" class="summary" style="display: none;">
+        <h2>Итоги тренировки</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <span class="summary-label">Общее время:</span>
+                <span class="summary-value" id="summary-total-time">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Количество кругов:</span>
+                <span class="summary-value" id="summary-lap-count">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Среднее время круга:</span>
+                <span class="summary-value" id="summary-avg-lap">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Среднее чистое время:</span>
+                <span class="summary-value" id="summary-avg-net">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Макс. время круга:</span>
+                <span class="summary-value" id="summary-max-lap">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Мин. время круга:</span>
+                <span class="summary-value" id="summary-min-lap">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Количество пауз:</span>
+                <span class="summary-value" id="summary-pause-count">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Суммарное время пауз:</span>
+                <span class="summary-value" id="summary-total-pause">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Чистое общее время:</span>
+                <span class="summary-value" id="summary-net-total">00:00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================================================
+        // Секундомер для эверестинга
+        // Автор: AI Assistant
+        // Дата создания: 2024-01-15
+        // Время создания: 14:30
+        // Версия: 2.0
+        // ==================================================
+        
+        // Переменные для хранения времени
+        let startTime = 0;
+        let lapStartTime = 0;
+        let pauseStartTime = 0;
+        let totalElapsed = 0;
+        let lapElapsed = 0;
+        let pauseElapsed = 0;
+        let isRunning = false;
+        let isPaused = false;
+        let lapCount = 0;
+        
+        // Массив для хранения данных о кругах
+        let lapsData = [];
+        
+        // Массив для хранения логов действий
+        let actionLogs = [];
+        
+        // Переменные для интервалов
+        let totalInterval;
+        let lapInterval;
+        let pauseInterval;
+        
+        // Переменные для кнопок с тройным нажатием
+        let finishClickCount = 0;
+        let finishClickTimer;
+        let finishIndicatorTimeout;
+        
+        let resetClickCount = 0;
+        let resetClickTimer;
+        let resetIndicatorTimeout;
+        
+        // Элементы DOM
+        const totalTimeDisplay = document.getElementById('total-time');
+        const lapTimeDisplay = document.getElementById('lap-time');
+        const pauseTimeDisplay = document.getElementById('pause-time');
+        const btnStart = document.getElementById('btn-start');
+        const btnPause = document.getElementById('btn-pause');
+        const btnFinish = document.getElementById('btn-finish');
+        const btnReset = document.getElementById('btn-reset');
+        const resultsBody = document.getElementById('results-body');
+        const totalStatus = document.getElementById('total-status');
+        const lapStatus = document.getElementById('lap-status');
+        const pauseStatus = document.getElementById('pause-status');
+        const finishIndicator = document.getElementById('finish-indicator');
+        const finishCountDisplay = document.getElementById('finish-count');
+        const resetIndicator = document.getElementById('reset-indicator');
+        const resetCountDisplay = document.getElementById('reset-count');
+        const summary = document.getElementById('summary');
+        const instructions = document.querySelector('.instructions');
+        const toggleInstructions = document.querySelector('.toggle-instructions');
+        
+        // Элементы итогов
+        const summaryTotalTime = document.getElementById('summary-total-time');
+        const summaryLapCount = document.getElementById('summary-lap-count');
+        const summaryAvgLap = document.getElementById('summary-avg-lap');
+        const summaryAvgNet = document.getElementById('summary-avg-net');
+        const summaryMaxLap = document.getElementById('summary-max-lap');
+        const summaryMinLap = document.getElementById('summary-min-lap');
+        const summaryPauseCount = document.getElementById('summary-pause-count');
+        const summaryTotalPause = document.getElementById('summary-total-pause');
+        const summaryNetTotal = document.getElementById('summary-net-total');
+        
+        // Функция форматирования времени в чч:мм:сс (без миллисекунд)
+        function formatTime(ms) {
+            const hours = Math.floor(ms / 3600000);
+            const minutes = Math.floor((ms % 3600000) / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Функция форматирования даты и времени для логов
+        function formatDateTime(date) {
+            return date.toLocaleString('ru-RU', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        // Функция добавления записи в лог
+        function addLog(action, details = '') {
+            const logEntry = {
+                timestamp: new Date(),
+                action: action,
+                details: details,
+                totalTime: totalElapsed,
+                lapTime: lapElapsed,
+                pauseTime: pauseElapsed,
+                lapCount: lapCount,
+                isPaused: isPaused
+            };
+            
+            actionLogs.push(logEntry);
+            console.log(`[${formatDateTime(logEntry.timestamp)}] ${action} ${details}`);
+        }
+        
+        // Функция обновления дисплеев времени
+        function updateDisplays() {
+            const now = Date.now();
+            
+            if (isRunning) {
+                // Общее время всегда увеличивается
+                totalElapsed = now - startTime;
+                
+                // Время круга увеличивается независимо от паузы
+                lapElapsed = now - lapStartTime;
+                
+                // Время паузы увеличивается только во время паузы
+                if (isPaused) {
+                    pauseElapsed = now - pauseStartTime;
+                }
+            }
+            
+            totalTimeDisplay.textContent = formatTime(totalElapsed);
+            lapTimeDisplay.textContent = formatTime(lapElapsed);
+            pauseTimeDisplay.textContent = formatTime(pauseElapsed);
+        }
+        
+        // Функция запуска секундомеров
+        function startTimers() {
+            const now = Date.now();
+            
+            if (!isRunning) {
+                // Первый запуск
+                startTime = now;
+                lapStartTime = now;
+                isRunning = true;
+                
+                // Логирование
+                addLog('СТАРТ', 'Запуск секундомера');
+                
+                // Обновление статусов
+                totalStatus.className = 'status-dot running';
+                lapStatus.className = 'status-dot running';
+                
+                // Активация кнопок
+                btnPause.disabled = false;
+                btnFinish.disabled = false;
+                btnReset.disabled = false;
+                btnStart.textContent = 'Круг';
+                btnStart.classList.add('active');
+                btnPause.classList.add('active');
+                
+                // Скрываем итоги, если они были показаны
+                summary.style.display = 'none';
+            } else {
+                // Фиксация времени круга
+                recordLap();
+                
+                // Сброс времени круга
+                lapStartTime = now;
+                lapElapsed = 0;
+                pauseElapsed = 0;
+                
+                // Логирование
+                addLog('КРУГ', `Зафиксирован круг №${lapCount + 1}`);
+            }
+            
+            // Запуск интервалов обновления
+            clearInterval(totalInterval);
+            clearInterval(lapInterval);
+            totalInterval = setInterval(updateDisplays, 100);
+            lapInterval = setInterval(updateDisplays, 100);
+        }
+        
+        // Функция паузы/возобновления
+        function togglePause() {
+            const now = Date.now();
+            
+            if (!isPaused) {
+                // Включение паузы
+                isPaused = true;
+                pauseStartTime = now;
+                pauseStatus.className = 'status-dot paused';
+                
+                // Логирование
+                addLog('ПАУЗА', 'Включена пауза');
+                
+                // Запуск секундомера паузы
+                clearInterval(pauseInterval);
+                pauseInterval = setInterval(updateDisplays, 100);
+            } else {
+                // Выключение паузы
+                isPaused = false;
+                pauseElapsed += now - pauseStartTime;
+                pauseStatus.className = 'status-dot stopped';
+                
+                // Логирование
+                addLog('ПАУЗА', 'Выключена пауза');
+                
+                // Остановка секундомера паузы
+                clearInterval(pauseInterval);
+            }
+        }
+        
+        // Функция фиксации круга
+        function recordLap() {
+            const now = Date.now();
+            lapCount++;
+            
+            // Расчет времени круга с паузой и без
+            const lapTimeWithPause = now - lapStartTime;
+            const netLapTime = lapTimeWithPause - pauseElapsed;
+            
+            // Сохраняем данные круга
+            const lapData = {
+                lapNumber: lapCount,
+                lapTime: lapTimeWithPause,
+                pauseTime: pauseElapsed,
+                netTime: netLapTime,
+                totalTime: now - startTime,
+                timestamp: new Date()
+            };
+            
+            lapsData.push(lapData);
+            
+            // Логирование
+            addLog('ФИКСАЦИЯ КРУГА', 
+                `Круг №${lapCount}: время=${formatTime(lapTimeWithPause)}, пауза=${formatTime(pauseElapsed)}, чистое=${formatTime(netLapTime)}`);
+            
+            // Добавление записи в таблицу
+            const newRow = resultsBody.insertRow();
+            newRow.innerHTML = `
+                <td>${lapCount}</td>
+                <td class="lap-time">${formatTime(lapTimeWithPause)}</td>
+                <td class="pause-time">${formatTime(pauseElapsed)}</td>
+                <td class="net-time">${formatTime(netLapTime)}</td>
+                <td class="total-time">${formatTime(now - startTime)}</td>
+            `;
+            
+            // Прокрутка к последней записи
+            resultsBody.parentElement.scrollTop = resultsBody.parentElement.scrollHeight;
+        }
+        
+        // Функция расчета итогов
+        function calculateSummary() {
+            if (lapsData.length === 0) return;
+            
+            // Общее время
+            const totalTime = lapsData[lapsData.length - 1].totalTime;
+            
+            // Количество кругов
+            const lapCount = lapsData.length;
+            
+            // Среднее время круга
+            const totalLapTime = lapsData.reduce((sum, lap) => sum + lap.lapTime, 0);
+            const avgLapTime = totalLapTime / lapCount;
+            
+            // Среднее чистое время
+            const totalNetTime = lapsData.reduce((sum, lap) => sum + lap.netTime, 0);
+            const avgNetTime = totalNetTime / lapCount;
+            
+            // Максимальное и минимальное время круга
+            const lapTimes = lapsData.map(lap => lap.lapTime);
+            const maxLapTime = Math.max(...lapTimes);
+            const minLapTime = Math.min(...lapTimes);
+            
+            // Количество пауз (круги с временем паузы > 0)
+            const pauseCount = lapsData.filter(lap => lap.pauseTime > 0).length;
+            
+            // Суммарное время пауз
+            const totalPauseTime = lapsData.reduce((sum, lap) => sum + lap.pauseTime, 0);
+            
+            // Чистое общее время
+            const netTotalTime = totalTime - totalPauseTime;
+            
+            // Обновляем элементы итогов
+            summaryTotalTime.textContent = formatTime(totalTime);
+            summaryLapCount.textContent = lapCount;
+            summaryAvgLap.textContent = formatTime(avgLapTime);
+            summaryAvgNet.textContent = formatTime(avgNetTime);
+            summaryMaxLap.textContent = formatTime(maxLapTime);
+            summaryMinLap.textContent = formatTime(minLapTime);
+            summaryPauseCount.textContent = pauseCount;
+            summaryTotalPause.textContent = formatTime(totalPauseTime);
+            summaryNetTotal.textContent = formatTime(netTotalTime);
+            
+            // Показываем блок итогов
+            summary.style.display = 'block';
+        }
+        
+        // Функция экспорта логов в файл с кодировкой UTF-8
+        function exportLogsToFile() {
+            if (actionLogs.length === 0) return;
+            
+            // Добавляем BOM для корректного отображения UTF-8
+            const BOM = '\uFEFF';
+            
+            // Создаем содержимое файла логов
+            let logContent = BOM + "Секундомер для эверестинга - Лог действий\n";
+            logContent += "==========================================\n\n";
+            
+            // Информация о файле
+            logContent += `Файл создан: ${new Date().toLocaleString('ru-RU')}\n`;
+            logContent += `Кодировка: UTF-8\n`;
+            logContent += "------------------------------------------\n\n";
+            
+            // Логи действий
+            logContent += "Лог действий:\n";
+            logContent += "Время\t\t\tДействие\t\tДетали\t\tОбщее время\tКруг\tПауза\n";
+            logContent += "--------------------------------------------------------------------------------\n";
+            
+            actionLogs.forEach(log => {
+                logContent += `${formatDateTime(log.timestamp)}\t${log.action}\t\t${log.details}\t\t`;
+                logContent += `${formatTime(log.totalTime)}\t${formatTime(log.lapTime)}\t${formatTime(log.pauseTime)}\n`;
+            });
+            
+            logContent += "\n\n";
+            
+            // Данные таблицы
+            logContent += "Данные по кругам:\n";
+            logContent += "Круг\tВремя круга\tПауза\tЧистое время\tОбщее время\tВремя фиксации\n";
+            logContent += "------------------------------------------------------------------------\n";
+            
+            lapsData.forEach(lap => {
+                logContent += `${lap.lapNumber}\t${formatTime(lap.lapTime)}\t${formatTime(lap.pauseTime)}\t`;
+                logContent += `${formatTime(lap.netTime)}\t${formatTime(lap.totalTime)}\t${formatDateTime(lap.timestamp)}\n`;
+            });
+            
+            logContent += "\n";
+            
+            // Итоги
+            logContent += "Итоги тренировки:\n";
+            logContent += "----------------------------------------\n";
+            logContent += `Общее время: ${summaryTotalTime.textContent}\n`;
+            logContent += `Количество кругов: ${summaryLapCount.textContent}\n`;
+            logContent += `Среднее время круга: ${summaryAvgLap.textContent}\n`;
+            logContent += `Среднее чистое время: ${summaryAvgNet.textContent}\n`;
+            logContent += `Максимальное время круга: ${summaryMaxLap.textContent}\n`;
+            logContent += `Минимальное время круга: ${summaryMinLap.textContent}\n`;
+            logContent += `Количество пауз: ${summaryPauseCount.textContent}\n`;
+            logContent += `Суммарное время пауз: ${summaryTotalPause.textContent}\n`;
+            logContent += `Чистое общее время: ${summaryNetTotal.textContent}\n`;
+            
+            // Создаем blob с указанием кодировки UTF-8
+            const blob = new Blob([logContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `everesting_log_${new Date().toISOString().slice(0, 10)}_${new Date().getHours()}${new Date().getMinutes()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Функция обработки нажатия кнопки финиша
+        function handleFinishClick() {
+            if (!isRunning) return;
+            
+            finishClickCount++;
+            
+            // Логирование попытки финиша
+            addLog('ПОПЫТКА ФИНИША', `Нажатие ${finishClickCount}/3`);
+            
+            // Показываем индикатор
+            finishIndicator.style.display = 'block';
+            finishCountDisplay.textContent = 3 - finishClickCount;
+            
+            // Сбрасываем предыдущий таймер
+            clearTimeout(finishClickTimer);
+            clearTimeout(finishIndicatorTimeout);
+            
+            // Если достигнуто тройное нажатие
+            if (finishClickCount >= 3) {
+                addLog('ФИНИШ', 'Успешная активация тройным нажатием');
+                finishTimers();
+                return;
+            }
+            
+            // Устанавливаем таймер для сброса счетчика
+            finishClickTimer = setTimeout(() => {
+                addLog('ФИНИШ', 'Таймаут - сброс счетчика нажатий');
+                finishClickCount = 0;
+                finishIndicator.style.display = 'none';
+            }, 1000);
+            
+            // Устанавливаем таймер для скрытия индикатора
+            finishIndicatorTimeout = setTimeout(() => {
+                finishIndicator.style.display = 'none';
+            }, 1000);
+        }
+        
+        // Функция обработки нажатия кнопки сброса
+        function handleResetClick() {
+            if (isRunning) return;
+            
+            resetClickCount++;
+            
+            // Логирование попытки сброса
+            addLog('ПОПЫТКА СБРОСА', `Нажатие ${resetClickCount}/3`);
+            
+            // Показываем индикатор
+            resetIndicator.style.display = 'block';
+            resetCountDisplay.textContent = 3 - resetClickCount;
+            
+            // Сбрасываем предыдущий таймер
+            clearTimeout(resetClickTimer);
+            clearTimeout(resetIndicatorTimeout);
+            
+            // Если достигнуто тройное нажатие
+            if (resetClickCount >= 3) {
+                addLog('СБРОС', 'Успешная активация тройным нажатием');
+                resetTimers();
+                return;
+            }
+            
+            // Устанавливаем таймер для сброса счетчика
+            resetClickTimer = setTimeout(() => {
+                addLog('СБРОС', 'Таймаут - сброс счетчика нажатий');
+                resetClickCount = 0;
+                resetIndicator.style.display = 'none';
+            }, 1000);
+            
+            // Устанавливаем таймер для скрытия индикатора
+            resetIndicatorTimeout = setTimeout(() => {
+                resetIndicator.style.display = 'none';
+            }, 1000);
+        }
+        
+        // Функция остановки всех секундомеров
+        function finishTimers() {
+            isRunning = false;
+            isPaused = false;
+            
+            // Остановка всех интервалов
+            clearInterval(totalInterval);
+            clearInterval(lapInterval);
+            clearInterval(pauseInterval);
+            clearTimeout(finishClickTimer);
+            clearTimeout(finishIndicatorTimeout);
+            
+            // Фиксация последнего круга, если таймер был запущен
+            if (lapCount > 0 && lapElapsed > 0) {
+                recordLap();
+            }
+            
+            // Расчет и отображение итогов
+            calculateSummary();
+            
+            // Логирование завершения
+            addLog('ЗАВЕРШЕНИЕ', `Тренировка завершена. Кругов: ${lapCount}, Общее время: ${formatTime(totalElapsed)}`);
+            
+            // Экспорт логов в файл с UTF-8 кодировкой
+            exportLogsToFile();
+            
+            // Обновление статусов
+            totalStatus.className = 'status-dot stopped';
+            lapStatus.className = 'status-dot stopped';
+            pauseStatus.className = 'status-dot stopped';
+            
+            // Блокировка кнопок
+            btnStart.disabled = true;
+            btnPause.disabled = true;
+            btnFinish.disabled = true;
+            btnReset.disabled = false;
+            
+            // Сброс текста кнопок
+            btnStart.textContent = 'Пуск/круг';
+            btnStart.classList.remove('active');
+            btnPause.classList.remove('active');
+            btnFinish.classList.remove('pressed');
+            
+            // Скрытие индикатора финиша
+            finishIndicator.style.display = 'none';
+            finishClickCount = 0;
+        }
+        
+        // Функция сброса
+        function resetTimers() {
+            // Остановка всех интервалов
+            clearInterval(totalInterval);
+            clearInterval(lapInterval);
+            clearInterval(pauseInterval);
+            clearTimeout(finishClickTimer);
+            clearTimeout(finishIndicatorTimeout);
+            clearTimeout(resetClickTimer);
+            clearTimeout(resetIndicatorTimeout);
+            
+            // Логирование сброса
+            addLog('ПОЛНЫЙ СБРОС', 'Все данные очищены');
+            
+            // Сброс переменных
+            startTime = 0;
+            lapStartTime = 0;
+            pauseStartTime = 0;
+            totalElapsed = 0;
+            lapElapsed = 0;
+            pauseElapsed = 0;
+            isRunning = false;
+            isPaused = false;
+            lapCount = 0;
+            finishClickCount = 0;
+            resetClickCount = 0;
+            lapsData = [];
+            actionLogs = []; // Очищаем логи при сбросе
+            
+            // Обновление дисплеев
+            updateDisplays();
+            
+            // Очистка таблицы
+            resultsBody.innerHTML = '';
+            
+            // Обновление статусов
+            totalStatus.className = 'status-dot stopped';
+            lapStatus.className = 'status-dot stopped';
+            pauseStatus.className = 'status-dot stopped';
+            
+            // Блокировка кнопок
+            btnStart.disabled = false;
+            btnPause.disabled = true;
+            btnFinish.disabled = true;
+            btnReset.disabled = true;
+            
+            // Сброс текста и стилей кнопок
+            btnStart.textContent = 'Пуск/круг';
+            btnStart.classList.remove('active');
+            btnPause.classList.remove('active');
+            btnFinish.classList.remove('pressed');
+            
+            // Скрытие индикаторов и итогов
+            finishIndicator.style.display = 'none';
+            resetIndicator.style.display = 'none';
+            summary.style.display = 'none';
+        }
+        
+        // Обработчики событий для кнопок
+        btnStart.addEventListener('click', startTimers);
+        
+        btnPause.addEventListener('click', togglePause);
+        
+        // Обработчики для кнопки Финиш с тройным нажатием
+        btnFinish.addEventListener('click', handleFinishClick);
+        
+        // Обработчики для кнопки Сброс с тройным нажатием
+        btnReset.addEventListener('click', handleResetClick);
+        
+        // Обработчик для переключения инструкции
+        toggleInstructions.addEventListener('click', function() {
+            instructions.classList.toggle('hidden');
+            addLog('ИНСТРУКЦИЯ', instructions.classList.contains('hidden') ? 'скрыта' : 'показана');
+        });
+        
+        // Инициализация
+        updateDisplays();
+        instructions.classList.add('hidden');
+        addLog('ИНИЦИАЛИЗАЦИЯ', 'Секундомер запущен и готов к работе');
+    </script>
+</body>
+</html>
