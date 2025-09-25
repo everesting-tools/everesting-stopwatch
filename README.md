@@ -48,10 +48,11 @@
 
 ## 📁 Структура проекта
 
-
-```
-
-everesting-stopwatch/ ├──index.html          # Главная страница ├──style.css           # Стили ├──404.html           # Страница перенаправления ├──README.md          # Документация ├──LICENSE            # Лицензия MIT └──.gitignore         # Игнорируемые файлы
+```everesting-stopwatch/ ├──index.html          # Главная страница 
+├──style.css           # Стили ├──404.html           # Страница перенаправления 
+├──README.md          # Документация 
+├──LICENSE            # Лицензия MIT 
+└──.gitignore         # Игнорируемые файлы
 
 ```
 
@@ -59,7 +60,7 @@ everesting-stopwatch/ ├──index.html          # Главная страни
 
 ```bash
 # Клонируйте репозиторий
-git clone https://github.com/ваш_username/everesting-stopwatch.git
+git clone https://github.com/evgsim/everesting-stopwatch.git
 
 # Перейдите в папку проекта
 cd everesting-stopwatch
@@ -84,8 +85,8 @@ open index.html
 
 📞 Контакты
 
-· Автор: [Ваше имя]
-· GitHub: @ваш_username
+· Автор: [J.S.]
+· GitHub: @evgsim
 · Issues: Сообщить о проблеме
 
 ❓ Часто задаваемые вопросы
