@@ -7,7 +7,7 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=for-the-badge&logo=githubpages&logoColor=white)
 
-**🚀 Живая демоверсия:** [Открыть секундомер](https://ваш_username.github.io/everesting-stopwatch)
+**🚀 Живая демоверсия:** [Открыть секундомер](https://evgsim.github.io/everesting-stopwatch)
 
 ## 📋 Особенности
 
