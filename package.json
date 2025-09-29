@@ -1,11 +1,5 @@
 {
-  "name": "everesting-stopwatch",
-  "version": "1.0.0",
   "scripts": {
-    "build": "jekyll build"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": ">=18"
+    "build": "echo 'No build needed'"
   }
 }
