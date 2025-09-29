@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build": "jekyll build"
+  },
+  "devDependencies": {},
+  "buildCommand": "jekyll build",
+  "outputDirectory": "_site"
+}
