@@ -280,3 +280,45 @@ tr:nth-child(even) {
     color: #3498db;
     font-weight: bold;
 }
+
+/* style.css - Добавьте эти стили */
+
+/* Исправление расположения кнопок */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+/* Стили для кнопки таблицы */
+.btn-table {
+    background-color: #9b59b6;
+    color: white;
+}
+
+.btn-table.active {
+    background-color: #8e44ad;
+}
+
+/* Гарантируем что таблица скрыта по умолчанию */
+.table-container {
+    display: none !important; /* Важно: принудительно скрыть */
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+}
+
+/* Убедимся что индикаторы скрыты */
+.action-indicator {
+    display: none !important;
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-weight: bold;
+    }
