@@ -1,6 +1,13 @@
 // main.js - Временная диагностика
 console.log('=== ДИАГНОСТИКА ===');
 
+// main.js - диагностика загрузки
+console.log('=== ДИАГНОСТИКА ЗАГРУЗКИ ===');
+console.log('config.js loaded:', typeof startTime !== 'undefined');
+console.log('timer-core.js loaded:', typeof startTimers !== 'undefined'); 
+console.log('ui-handlers.js loaded:', typeof createTripleClickHandler !== 'undefined');
+console.log('isRunning:', isRunning);
+
 // Проверка функций
 console.log('hideIndicator:', typeof hideIndicator);
 console.log('toggleTable:', typeof toggleTable); 
