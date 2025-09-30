@@ -42,12 +42,25 @@ function startTimers() {
         startTime = now;
         lapStartTime = now;
         isRunning = true;
+        lapCount = 0;
         
         // Показываем только нужные кнопки
         document.getElementById('btn-start').style.display = 'inline-block';
         document.getElementById('btn-pause').style.display = 'inline-block';
         document.getElementById('btn-finish').style.display = 'inline-block';
         document.getElementById('btn-reset').style.display = 'none';
+        
+        // Меняем текст кнопки
+        document.getElementById('btn-start').textContent = 'Круг';
+        
+        // Скрываем инструкцию при старте
+        const instructions = document.querySelector('.instructions');
+        const btnInstructions = document.querySelector('.toggle-instructions');
+        if (instructions.style.display === 'block') {
+            instructions.style.display = 'none';
+            btnInstructions.textContent = 'Инструкция';
+            btnInstructions.classList.remove('active');
+        }
         
         // Обновление статусов
         document.getElementById('total-status').className = 'status-dot running';
