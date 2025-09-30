@@ -20,14 +20,26 @@ function updateDisplays() {
             // Без паузы - обновляем все
             lapElapsed = now - lapStartTime - currentLapPause;
         } else {
-            // Во время паузы - обновляем только общее время и паузу
+            // Во время паузы - обновляем только общее время и паузу текущего круга
             // Время круга НЕ обновляем (оно замораживается)
             currentLapPause = now - pauseStartTime;
         }
         
-        // Суммарное время пауз = паузы всех завершенных кругов + пауза текущего круга
+        // Общее время всех пауз (для внутренних расчетов)
         totalPauseElapsed = lapsData.reduce((sum, lap) => sum + lap.pauseTime, 0) + currentLapPause;
     }
+    
+    if (document.getElementById('total-time')) {
+        document.getElementById('total-time').textContent = formatTime(totalElapsed);
+        document.getElementById('lap-time').textContent = formatTime(lapElapsed);
+        // Показываем паузу ТОЛЬКО текущего круга
+        document.getElementById('pause-time').textContent = formatTime(currentLapPause);
+        
+        // Показываем номер текущего круга (0 до старта, затем 1,2,3...)
+        const currentLapDisplay = isRunning ? (lapCount + 1) : 0;
+        document.getElementById('current-lap').textContent = currentLapDisplay;
+    }
+}
     
     if (document.getElementById('total-time')) {
         document.getElementById('total-time').textContent = formatTime(totalElapsed);
