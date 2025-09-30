@@ -51,25 +51,34 @@ function createTripleClickHandler(type, actionFunction) {
     };
 }
 
-// ui-handlers.js - Исправленная функция переключения таблицы
+// Функция переключения таблицы
 function toggleTable() {
     const tableContainer = document.getElementById('table-container');
-    const btnTable = document.getElementById('btn-table');
-    
-    if (!tableContainer || !btnTable) {
-        console.error('❌ Не найдены элементы таблицы');
-        return;
-    }
+    const btnTable = document.querySelector('.toggle-table');
     
     if (tableContainer.style.display === 'none' || !tableContainer.style.display) {
         tableContainer.style.display = 'block';
         btnTable.textContent = 'Скрыть таблицу';
         btnTable.classList.add('active');
-        console.log('✅ Таблица показана');
     } else {
         tableContainer.style.display = 'none';
         btnTable.textContent = 'Таблица';
         btnTable.classList.remove('active');
-        console.log('✅ Таблица скрыта');
+    }
+}
+
+// Функция переключения инструкции
+function toggleInstructions() {
+    const instructions = document.querySelector('.instructions');
+    const btnInstructions = document.querySelector('.toggle-instructions');
+    
+    if (instructions.style.display === 'none' || !instructions.style.display) {
+        instructions.style.display = 'block';
+        btnInstructions.textContent = 'Скрыть инструкцию';
+        btnInstructions.classList.add('active');
+    } else {
+        instructions.style.display = 'none';
+        btnInstructions.textContent = 'Инструкция';
+        btnInstructions.classList.remove('active');
     }
 }
