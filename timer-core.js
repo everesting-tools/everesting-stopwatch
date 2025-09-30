@@ -15,17 +15,21 @@ function updateDisplays() {
     
     if (isRunning) {
         totalElapsed = now - startTime;
-        lapElapsed = now - lapStartTime;
+        lapElapsed = now - lapStartTime - currentLapPause;
         
         if (isPaused) {
-            pauseElapsed = now - pauseStartTime;
+            currentLapPause = now - pauseStartTime;
         }
+        
+        // Обновляем суммарное время пауз
+        totalPauseElapsed = lapsData.reduce((sum, lap) => sum + lap.pauseTime, 0) + currentLapPause;
     }
     
     if (document.getElementById('total-time')) {
         document.getElementById('total-time').textContent = formatTime(totalElapsed);
         document.getElementById('lap-time').textContent = formatTime(lapElapsed);
-        document.getElementById('pause-time').textContent = formatTime(pauseElapsed);
+        document.getElementById('pause-time').textContent = formatTime(totalPauseElapsed);
+        document.getElementById('current-lap').textContent = lapCount + 1;
     }
 }
 
@@ -34,28 +38,30 @@ function startTimers() {
     const now = Date.now();
     
     if (!isRunning) {
+        // Первый запуск
         startTime = now;
         lapStartTime = now;
         isRunning = true;
+        
+        // Показываем только нужные кнопки
+        document.getElementById('btn-start').style.display = 'inline-block';
+        document.getElementById('btn-pause').style.display = 'inline-block';
+        document.getElementById('btn-finish').style.display = 'inline-block';
+        document.getElementById('btn-reset').style.display = 'none';
         
         // Обновление статусов
         document.getElementById('total-status').className = 'status-dot running';
         document.getElementById('lap-status').className = 'status-dot running';
         
-        // Активация кнопок
-        document.getElementById('btn-pause').disabled = false;
-        document.getElementById('btn-finish').disabled = false;
-        document.getElementById('btn-reset').disabled = false;
-        document.getElementById('btn-start').textContent = 'Круг';
-        document.getElementById('btn-start').classList.add('active');
-        document.getElementById('btn-pause').classList.add('active');
-        
         document.getElementById('summary').style.display = 'none';
     } else {
+        // Фиксация времени круга
         recordLap();
+        
+        // Сброс времени круга
         lapStartTime = now;
         lapElapsed = 0;
-        pauseElapsed = 0;
+        currentLapPause = 0;
     }
     
     clearInterval(totalInterval);
@@ -76,7 +82,7 @@ function togglePause() {
         document.getElementById('pause-status').className = 'status-dot paused';
     } else {
         isPaused = false;
-        pauseElapsed += now - pauseStartTime;
+        currentLapPause += now - pauseStartTime;
         document.getElementById('pause-status').className = 'status-dot stopped';
     }
     
@@ -89,13 +95,13 @@ function recordLap() {
     lapCount++;
     
     const lapTimeWithPause = now - lapStartTime;
-    const netLapTime = lapTimeWithPause - pauseElapsed;
+    const netLapTime = lapTimeWithPause - currentLapPause;
     
     // Сохраняем данные круга
     const lapData = {
         lapNumber: lapCount,
         lapTime: lapTimeWithPause,
-        pauseTime: pauseElapsed,
+        pauseTime: currentLapPause,
         netTime: netLapTime,
         totalTime: now - startTime,
         timestamp: new Date()
@@ -108,14 +114,10 @@ function recordLap() {
     newRow.innerHTML = `
         <td>${lapCount}</td>
         <td class="lap-time">${formatTime(lapTimeWithPause)}</td>
-        <td class="pause-time">${formatTime(pauseElapsed)}</td>
+        <td class="pause-time">${formatTime(currentLapPause)}</td>
         <td class="net-time">${formatTime(netLapTime)}</td>
         <td class="total-time">${formatTime(now - startTime)}</td>
     `;
-    
-    // Прокрутка к последней записи
-    document.getElementById('results-body').parentElement.scrollTop = 
-        document.getElementById('results-body').parentElement.scrollHeight;
 }
 
 // Функция остановки всех секундомеров
@@ -126,8 +128,6 @@ function finishTimers() {
     clearInterval(totalInterval);
     clearInterval(lapInterval);
     clearInterval(pauseInterval);
-    clearTimeout(finishClickTimer);
-    clearTimeout(finishIndicatorTimeout);
     
     // Фиксация последнего круга
     if (lapCount > 0 && lapElapsed > 0) {
@@ -142,16 +142,11 @@ function finishTimers() {
     document.getElementById('lap-status').className = 'status-dot stopped';
     document.getElementById('pause-status').className = 'status-dot stopped';
     
-    // Блокировка кнопок
-    document.getElementById('btn-start').disabled = true;
-    document.getElementById('btn-pause').disabled = true;
-    document.getElementById('btn-finish').disabled = true;
-    document.getElementById('btn-reset').disabled = false;
-    
-    // Сброс текста кнопок
-    document.getElementById('btn-start').textContent = 'Пуск/круг';
-    document.getElementById('btn-start').classList.remove('active');
-    document.getElementById('btn-pause').classList.remove('active');
+    // Показываем только кнопку сброса
+    document.getElementById('btn-start').style.display = 'none';
+    document.getElementById('btn-pause').style.display = 'none';
+    document.getElementById('btn-finish').style.display = 'none';
+    document.getElementById('btn-reset').style.display = 'inline-block';
     
     hideIndicator('finish');
 }
@@ -161,14 +156,7 @@ function resetTimers() {
     clearInterval(totalInterval);
     clearInterval(lapInterval);
     clearInterval(pauseInterval);
-    clearTimeout(startClickTimer);
-    clearTimeout(startIndicatorTimeout);
-    clearTimeout(pauseClickTimer);
-    clearTimeout(pauseIndicatorTimeout);
-    clearTimeout(finishClickTimer);
-    clearTimeout(finishIndicatorTimeout);
-    clearTimeout(resetClickTimer);
-    clearTimeout(resetIndicatorTimeout);
+    clearAllTimeouts();
     
     // Сброс переменных
     startTime = 0;
@@ -176,7 +164,8 @@ function resetTimers() {
     pauseStartTime = 0;
     totalElapsed = 0;
     lapElapsed = 0;
-    pauseElapsed = 0;
+    totalPauseElapsed = 0;
+    currentLapPause = 0;
     isRunning = false;
     isPaused = false;
     lapCount = 0;
@@ -196,79 +185,33 @@ function resetTimers() {
     document.getElementById('lap-status').className = 'status-dot stopped';
     document.getElementById('pause-status').className = 'status-dot stopped';
     
-    // Блокировка кнопок
-    document.getElementById('btn-start').disabled = false;
-    document.getElementById('btn-pause').disabled = true;
-    document.getElementById('btn-finish').disabled = true;
-    document.getElementById('btn-reset').disabled = true;
-    
-    // Сброс текста и стилей кнопок
-    document.getElementById('btn-start').textContent = 'Пуск/круг';
-    document.getElementById('btn-start').classList.remove('active');
-    document.getElementById('btn-pause').classList.remove('active');
-    document.getElementById('btn-table').textContent = 'Таблица';
-    document.getElementById('btn-table').classList.remove('active');
+    // Показываем только кнопку пуск
+    document.getElementById('btn-start').style.display = 'inline-block';
+    document.getElementById('btn-pause').style.display = 'none';
+    document.getElementById('btn-finish').style.display = 'none';
+    document.getElementById('btn-reset').style.display = 'none';
     
     // Скрытие элементов
+    hideAllIndicators();
+    document.getElementById('summary').style.display = 'none';
+}
+
+// Функция очистки всех таймеров
+function clearAllTimeouts() {
+    clearTimeout(startClickTimer);
+    clearTimeout(startIndicatorTimeout);
+    clearTimeout(pauseClickTimer);
+    clearTimeout(pauseIndicatorTimeout);
+    clearTimeout(finishClickTimer);
+    clearTimeout(finishIndicatorTimeout);
+    clearTimeout(resetClickTimer);
+    clearTimeout(resetIndicatorTimeout);
+}
+
+// Функция скрытия всех индикаторов
+function hideAllIndicators() {
     hideIndicator('start');
     hideIndicator('pause');
     hideIndicator('finish');
     hideIndicator('reset');
-    document.getElementById('summary').style.display = 'none';
-    document.getElementById('table-container').style.display = 'none';
-}
-
-// Функция расчета итогов
-// timer-core.js - Добавьте в начало функции calculateSummary()
-function calculateSummary() {
-    if (lapsData.length === 0) {
-        console.log('❌ Нет данных для итогов');
-        return;
-    }
-    
-    // Создаем HTML для итогов если его нет
-    const summaryContent = document.getElementById('summary-content');
-    if (!summaryContent.innerHTML.trim()) {
-        summaryContent.innerHTML = `
-            <div class="summary-item">
-                <span class="summary-label">Общее время:</span>
-                <span class="summary-value" id="summary-total-time">00:00:00</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Количество кругов:</span>
-                <span class="summary-value" id="summary-lap-count">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Среднее время круга:</span>
-                <span class="summary-value" id="summary-avg-lap">00:00:00</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Среднее чистое время:</span>
-                <span class="summary-value" id="summary-avg-net">00:00:00</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Макс. время круга:</span>
-                <span class="summary-value" id="summary-max-lap">00:00:00</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Мин. время круга:</span>
-                <span class="summary-value" id="summary-min-lap">00:00:00</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Количество пауз:</span>
-                <span class="summary-value" id="summary-pause-count">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Суммарное время пауз:</span>
-                <span class="summary-value" id="summary-total-pause">00:00:00</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">Чистое общее время:</span>
-                <span class="summary-value" id="summary-net-total">00:00:00</span>
-            </div>
-        `;
-    }
-    
-    // ... остальной код расчета
-    console.log('✅ Итоги рассчитаны и отображены');
-}
+        }
