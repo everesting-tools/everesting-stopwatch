@@ -61,9 +61,18 @@ function toggleInstructions() {
 function createTripleClickHandler(type, actionFunction) {
     return function() {
         // Проверка условий для некоторых кнопок
-        if (type === 'pause' && !isRunning) return;
-        if (type === 'finish' && !isRunning) return;
-        if (type === 'reset' && isRunning) return;
+        if (type === 'pause' && !isRunning) {
+            console.log('❌ Пауза: секундомер не запущен');
+            return;
+        }
+        if (type === 'finish' && !isRunning) {
+            console.log('❌ Финиш: секундомер не запущен');
+            return;
+        }
+        if (type === 'reset' && isRunning) {
+            console.log('❌ Сброс: секундомер еще работает');
+            return;
+        }
         
         const count = window[`${type}ClickCount`] + 1;
         window[`${type}ClickCount`] = count;
@@ -74,12 +83,14 @@ function createTripleClickHandler(type, actionFunction) {
         if (indicator && countDisplay) {
             indicator.style.display = 'block';
             countDisplay.textContent = 3 - count;
+            console.log(`🔘 ${type}: нажатие ${count}/3`);
         }
         
         clearTimeout(window[`${type}ClickTimer`]);
         clearTimeout(window[`${type}IndicatorTimeout`]);
         
         if (count >= 3) {
+            console.log(`✅ ${type}: активировано тройным нажатием`);
             actionFunction();
             return;
         }
@@ -88,6 +99,7 @@ function createTripleClickHandler(type, actionFunction) {
             window[`${type}ClickCount`] = 0;
             if (indicator) {
                 indicator.style.display = 'none';
+                console.log(`⏰ ${type}: таймаут, сброс счетчика`);
             }
         }, 1000);
         
@@ -97,4 +109,4 @@ function createTripleClickHandler(type, actionFunction) {
             }
         }, 1000);
     };
-            }
+        }
