@@ -219,36 +219,56 @@ function resetTimers() {
 }
 
 // Функция расчета итогов
+// timer-core.js - Добавьте в начало функции calculateSummary()
 function calculateSummary() {
-    if (lapsData.length === 0) return;
+    if (lapsData.length === 0) {
+        console.log('❌ Нет данных для итогов');
+        return;
+    }
     
-    const totalTime = lapsData[lapsData.length - 1].totalTime;
-    const lapCount = lapsData.length;
+    // Создаем HTML для итогов если его нет
+    const summaryContent = document.getElementById('summary-content');
+    if (!summaryContent.innerHTML.trim()) {
+        summaryContent.innerHTML = `
+            <div class="summary-item">
+                <span class="summary-label">Общее время:</span>
+                <span class="summary-value" id="summary-total-time">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Количество кругов:</span>
+                <span class="summary-value" id="summary-lap-count">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Среднее время круга:</span>
+                <span class="summary-value" id="summary-avg-lap">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Среднее чистое время:</span>
+                <span class="summary-value" id="summary-avg-net">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Макс. время круга:</span>
+                <span class="summary-value" id="summary-max-lap">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Мин. время круга:</span>
+                <span class="summary-value" id="summary-min-lap">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Количество пауз:</span>
+                <span class="summary-value" id="summary-pause-count">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Суммарное время пауз:</span>
+                <span class="summary-value" id="summary-total-pause">00:00:00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Чистое общее время:</span>
+                <span class="summary-value" id="summary-net-total">00:00:00</span>
+            </div>
+        `;
+    }
     
-    const totalLapTime = lapsData.reduce((sum, lap) => sum + lap.lapTime, 0);
-    const avgLapTime = totalLapTime / lapCount;
-    
-    const totalNetTime = lapsData.reduce((sum, lap) => sum + lap.netTime, 0);
-    const avgNetTime = totalNetTime / lapCount;
-    
-    const lapTimes = lapsData.map(lap => lap.lapTime);
-    const maxLapTime = Math.max(...lapTimes);
-    const minLapTime = Math.min(...lapTimes);
-    
-    const pauseCount = lapsData.filter(lap => lap.pauseTime > 0).length;
-    const totalPauseTime = lapsData.reduce((sum, lap) => sum + lap.pauseTime, 0);
-    const netTotalTime = totalTime - totalPauseTime;
-    
-    // Обновляем элементы итогов
-    document.getElementById('summary-total-time').textContent = formatTime(totalTime);
-    document.getElementById('summary-lap-count').textContent = lapCount;
-    document.getElementById('summary-avg-lap').textContent = formatTime(avgLapTime);
-    document.getElementById('summary-avg-net').textContent = formatTime(avgNetTime);
-    document.getElementById('summary-max-lap').textContent = formatTime(maxLapTime);
-    document.getElementById('summary-min-lap').textContent = formatTime(minLapTime);
-    document.getElementById('summary-pause-count').textContent = pauseCount;
-    document.getElementById('summary-total-pause').textContent = formatTime(totalPauseTime);
-    document.getElementById('summary-net-total').textContent = formatTime(netTotalTime);
-    
-    document.getElementById('summary').style.display = 'block';
-      }
+    // ... остальной код расчета
+    console.log('✅ Итоги рассчитаны и отображены');
+}
