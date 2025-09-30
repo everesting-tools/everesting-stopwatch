@@ -143,7 +143,7 @@ function recordLap() {
     const lapData = {
         lapNumber: lapCount + 1,
         lapTime: lapTimeWithPause,
-        pauseTime: currentLapPause,
+        pauseTime: currentLapPause,  // Пауза этого конкретного круга
         netTime: netLapTime,
         totalTime: now - startTime,
         timestamp: new Date()
@@ -172,6 +172,9 @@ function recordLap() {
             tableContainer.scrollTop = tableContainer.scrollHeight;
         }
     }
+    
+    // Сбрасываем паузу текущего круга для следующего круга
+    currentLapPause = 0;
 }
 
 // Функция остановки всех секундомеров
@@ -221,7 +224,7 @@ function resetTimers() {
     totalElapsed = 0;
     lapElapsed = 0;
     totalPauseElapsed = 0;
-    currentLapPause = 0;
+    currentLapPause = 0;  // Сбрасываем паузу текущего круга
     isRunning = false;
     isPaused = false;
     lapCount = 0;
