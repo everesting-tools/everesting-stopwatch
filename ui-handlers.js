@@ -51,18 +51,25 @@ function createTripleClickHandler(type, actionFunction) {
     };
 }
 
-// Функция переключения таблицы
+// ui-handlers.js - Исправленная функция переключения таблицы
 function toggleTable() {
     const tableContainer = document.getElementById('table-container');
     const btnTable = document.getElementById('btn-table');
     
-    if (tableContainer.style.display === 'none') {
+    if (!tableContainer || !btnTable) {
+        console.error('❌ Не найдены элементы таблицы');
+        return;
+    }
+    
+    if (tableContainer.style.display === 'none' || !tableContainer.style.display) {
         tableContainer.style.display = 'block';
         btnTable.textContent = 'Скрыть таблицу';
         btnTable.classList.add('active');
+        console.log('✅ Таблица показана');
     } else {
         tableContainer.style.display = 'none';
         btnTable.textContent = 'Таблица';
         btnTable.classList.remove('active');
+        console.log('✅ Таблица скрыта');
     }
 }
