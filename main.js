@@ -1,3 +1,21 @@
+// main.js - Временная диагностика
+console.log('=== ДИАГНОСТИКА ===');
+
+// Проверка функций
+console.log('hideIndicator:', typeof hideIndicator);
+console.log('toggleTable:', typeof toggleTable); 
+console.log('toggleInstructions:', typeof toggleInstructions);
+console.log('createTripleClickHandler:', typeof createTripleClickHandler);
+console.log('startTimers:', typeof startTimers);
+
+// Проверка элементов
+console.log('btn-start:', document.getElementById('btn-start'));
+console.log('toggle-table:', document.querySelector('.toggle-table'));
+console.log('toggle-instructions:', document.querySelector('.toggle-instructions'));
+
+console.log('=== КОНЕЦ ДИАГНОСТИКИ ===');
+
+
 // main.js - Инициализация приложения
 
 // Инициализация при загрузке страницы
