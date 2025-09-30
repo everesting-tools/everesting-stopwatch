@@ -1,5 +1,21 @@
 // main.js - Инициализация приложения
 
+// main.js - Добавьте в начало
+console.log('🔧 Загружен main.js');
+
+// Проверка что все модули загружены
+if (typeof formatTime === 'undefined') {
+    console.error('❌ timer-core.js не загружен');
+}
+if (typeof createTripleClickHandler === 'undefined') {
+    console.error('❌ ui-handlers.js не загружен');
+}
+if (typeof startTime === 'undefined') {
+    console.error('❌ config.js не загружен');
+}
+
+console.log('✅ Все модули загружены');
+
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     // Настройка обработчиков кнопок
