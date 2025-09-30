@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -7,10 +7,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Секундомер для эверестинга</h1>
+    <div class="header">
+        <h1>Секундомер для эверестинга</h1>
+        <div class="header-controls">
+            <button class="toggle-instructions">Инструкция</button>
+            <button class="toggle-table">Таблица</button>
+        </div>
+    </div>
     
     <div class="instructions">
-        <button class="toggle-instructions"></button>
         <div class="instructions-content">
             <h3>Инструкция:</h3>
             <ul>
@@ -18,27 +23,19 @@
                 <li><strong>Пауза</strong> - включает/выключает паузу (тройное нажатие)</li>
                 <li><strong>Финиш</strong> - останавливает все секундомеры (тройное нажатие)</li>
                 <li><strong>Сброс</strong> - сбрасывает все данные (тройное нажатие)</li>
-                <li><strong>Таблица</strong> - показывает/скрывает таблицу результатов</li>
             </ul>
             
             <div class="everesting-info">
                 <h3>🏔️ Что такое эверестинг?</h3>
                 <p><strong>Эверестинг</strong> - это преодоление на велосипеде высоты, равной высоте Эвереста (8848 метров) за одну тренировку.</p>
-                <p><strong>Формула расчета:</strong></p>
-                <ul>
-                    <li>Высота подъема × Количество подъемов = 8848 метров</li>
-                    <li>Пример: 20 подъемов по 442 метра = 8840 метров</li>
-                    <li>Пример: 10 подъемов по 885 метров = 8850 метров</li>
-                </ul>
-                <p>Каждый круг обычно включает подъем и спуск. Это экстремальная велодисциплина!</p>
             </div>
         </div>
     </div>
     
     <div class="timer-display">
         <div>Общее время: <span id="total-time">00:00:00</span></div>
-        <div>Текущий круг: <span id="lap-time">00:00:00</span></div>
-        <div>Пауза: <span id="pause-time">00:00:00</span></div>
+        <div>Текущий круг <span id="current-lap">0</span>: <span id="lap-time">00:00:00</span></div>
+        <div>Сумма пауз: <span id="pause-time">00:00:00</span></div>
     </div>
     
     <div class="status-indicator">
@@ -57,11 +54,10 @@
     </div>
     
     <div class="controls">
-        <button id="btn-start" class="btn-start">Пуск/круг</button>
-        <button id="btn-pause" class="btn-pause" disabled>Пауза</button>
-        <button id="btn-finish" class="btn-finish" disabled>Финиш</button>
-        <button id="btn-reset" class="btn-reset" disabled>Сброс</button>
-        <button id="btn-table" class="btn-table">Таблица</button>
+        <button id="btn-start" class="btn-start">Пуск</button>
+        <button id="btn-pause" class="btn-pause" style="display: none;">Пауза</button>
+        <button id="btn-finish" class="btn-finish" style="display: none;">Финиш</button>
+        <button id="btn-reset" class="btn-reset" style="display: none;">Сброс</button>
     </div>
     
     <div id="start-indicator" class="action-indicator" style="display: none;">
@@ -80,19 +76,18 @@
         Нажмите еще <span id="reset-count">2</span> раза для сброса
     </div>
     
-    <div id="table-container" class="table-container" style="display: none;">
+    <div id="table-container" class="table-container">
         <table id="results-table">
             <thead>
                 <tr>
                     <th>Круг</th>
                     <th>Время круга</th>
-                    <th>Пауза</th>
+                    <th>Пауза в круге</th>
                     <th>Чистое время</th>
                     <th>Общее время</th>
                 </tr>
             </thead>
             <tbody id="results-body">
-                <!-- Данные будут добавляться здесь -->
             </tbody>
         </table>
     </div>
@@ -100,11 +95,9 @@
     <div id="summary" class="summary" style="display: none;">
         <h2>Итоги тренировки</h2>
         <div class="summary-grid" id="summary-content">
-            <!-- Заполняется JavaScript -->
         </div>
     </div>
 
-    <!-- Подключаем модули -->
     <script src="config.js"></script>
     <script src="timer-core.js"></script>
     <script src="ui-handlers.js"></script>
