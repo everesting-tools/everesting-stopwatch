@@ -1,4 +1,4 @@
-/* style.css - Адаптивные стили для смартфона */
+/* style.css - Адаптивные стили для смартфона (улучшенная версия) */
 
 * {
     box-sizing: border-box;
@@ -7,11 +7,12 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
     padding: 10px;
     background: #f5f5f5;
     max-width: 100%;
     overflow-x: hidden;
+    line-height: 1.5;
 }
 
 /* Шапка */
@@ -51,6 +52,7 @@ body {
     background: #ecf0f1;
     padding: 12px;
     border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .timer-display div {
@@ -79,6 +81,7 @@ body {
     padding: 15px 20px;
     font-size: 1.1rem;
     min-width: 80px;
+    min-height: 44px; /* Минимальная область касания */
 }
 
 /* Инструкция и таблица */
@@ -88,10 +91,24 @@ body {
     margin: 10px 0;
     border-radius: 8px;
     display: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .instructions.active, .table-container.active {
     display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
 }
 
 /* Индикаторы */
@@ -104,10 +121,27 @@ body {
     display: none;
 }
 
-#start-indicator { background: #ffeaa7; }
-#pause-indicator { background: #fdebd0; }
-#finish-indicator { background: #fadbd8; }
-#reset-indicator { background: #e8f4f8; }
+.action-indicator.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+#start-indicator { 
+    background: #ffeaa7; 
+    border-left: 4px solid #fdcb6e;
+}
+#pause-indicator { 
+    background: #fdebd0; 
+    border-left: 4px solid #f39c12;
+}
+#finish-indicator { 
+    background: #fadbd8; 
+    border-left: 4px solid #e74c3c;
+}
+#reset-indicator { 
+    background: #e8f4f8; 
+    border-left: 4px solid #3498db;
+}
 
 /* Кнопки */
 button {
@@ -116,16 +150,57 @@ button {
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
+    min-height: 44px; /* Доступность касаний */
+    min-width: 44px;
+    will-change: transform;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-.btn-start { background: #2ecc71; color: white; }
-.btn-pause { background: #f39c12; color: white; }
-.btn-finish { background: #e74c3c; color: white; }
-.btn-reset { background: #95a5a6; color: white; }
+button:active {
+    transform: scale(0.95);
+}
+
+.btn-start { 
+    background: #2ecc71; 
+    color: white; 
+}
+.btn-start:hover:not(:disabled) { 
+    background: #27ae60; 
+}
+
+.btn-pause { 
+    background: #f39c12; 
+    color: white; 
+}
+.btn-pause:hover:not(:disabled) { 
+    background: #e67e22; 
+}
+
+.btn-finish { 
+    background: #e74c3c; 
+    color: white; 
+}
+.btn-finish:hover:not(:disabled) { 
+    background: #c0392b; 
+}
+
+.btn-reset { 
+    background: #95a5a6; 
+    color: white; 
+}
+.btn-reset:hover:not(:disabled) { 
+    background: #7f8c8d; 
+}
 
 .toggle-instructions, .toggle-table {
     background: #3498db;
     color: white;
+}
+
+.toggle-instructions:hover:not(:disabled), 
+.toggle-table:hover:not(:disabled) {
+    background: #2980b9;
 }
 
 button.active {
@@ -135,13 +210,20 @@ button.active {
 button:disabled {
     background: #bdc3c7;
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Таблица */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
+    min-width: 400px; /* Минимальная ширина для горизонтального скролла */
 }
 
 th, td {
@@ -155,6 +237,16 @@ th {
     color: white;
     position: sticky;
     top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+tr:hover {
+    background: #e8f4f8;
 }
 
 /* Итоги */
@@ -163,6 +255,7 @@ th {
     padding: 15px;
     margin-top: 15px;
     border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .summary-grid {
@@ -177,6 +270,7 @@ th {
     padding: 8px;
     background: white;
     border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Статус-точки */
@@ -184,13 +278,91 @@ th {
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    display: inline-block;
 }
 
-.running { background: #2ecc71; }
-.paused { background: #f39c12; }
-.stopped { background: #e74c3c; }
+.running { 
+    background: #2ecc71; 
+    animation: pulse 1.5s ease-in-out infinite;
+}
 
-/* Адаптивность */
+.paused { 
+    background: #f39c12; 
+}
+
+.stopped { 
+    background: #e74c3c; 
+}
+
+/* Анимация пульсации для running статуса */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .header h1 {
+        color: #e0e0e0;
+    }
+    
+    .timer-display {
+        background: #2d2d2d;
+        color: #e0e0e0;
+    }
+    
+    .instructions, .table-container {
+        background: #2d2d2d;
+        color: #e0e0e0;
+    }
+    
+    .summary {
+        background: #2d2d2d;
+    }
+    
+    .summary-item {
+        background: #3a3a3a;
+    }
+    
+    th {
+        background: #2980b9;
+    }
+    
+    tr:nth-child(even) {
+        background: #252525;
+    }
+    
+    tr:hover {
+        background: #333;
+    }
+    
+    td {
+        border-bottom-color: #444;
+    }
+}
+
+/* Адаптивность для планшетов */
+@media (min-width: 481px) and (max-width: 768px) {
+    .controls {
+        max-width: 500px;
+        margin: 20px auto;
+    }
+    
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .timer-display {
+        font-size: 1.5rem;
+    }
+}
+
+/* Адаптивность для смартфонов */
 @media (max-width: 480px) {
     .header {
         flex-direction: column;
@@ -214,4 +386,71 @@ th {
     th, td {
         padding: 6px 8px;
     }
-        }
+    
+    .summary-item {
+        font-size: 0.9rem;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+    body {
+        padding: 5px;
+    }
+    
+    .header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .timer-display {
+        font-size: 1rem;
+        padding: 8px;
+    }
+    
+    .controls button {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+        min-width: 70px;
+    }
+    
+    table {
+        font-size: 0.75rem;
+        min-width: 350px;
+    }
+}
+
+/* Landscape режим для мобильных */
+@media (max-height: 500px) and (orientation: landscape) {
+    .timer-display {
+        margin: 10px 0;
+        padding: 8px;
+    }
+    
+    .controls {
+        margin: 10px 0;
+    }
+    
+    .controls button {
+        padding: 10px 15px;
+    }
+}
+
+/* Улучшение производительности */
+.timer-display,
+.action-indicator,
+.instructions,
+.table-container {
+    will-change: opacity, transform;
+}
+
+/* Accessibility - увеличенный контраст для фокуса */
+button:focus-visible {
+    outline: 3px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* Предотвращение выделения текста при двойном клике */
+button, .status-dot {
+    user-select: none;
+    -webkit-user-select: none;
+}
