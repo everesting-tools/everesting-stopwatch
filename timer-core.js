@@ -17,9 +17,11 @@ function updateDisplays() {
         totalElapsed = now - startTime;
         
         if (!isPaused) {
+            // Без паузы - обновляем все
             lapElapsed = now - lapStartTime - currentLapPause;
         } else {
-            // Во время паузы обновляем только время паузы
+            // Во время паузы - обновляем только общее время и паузу
+            // Время круга НЕ обновляем (оно замораживается)
             currentLapPause = now - pauseStartTime;
         }
         
