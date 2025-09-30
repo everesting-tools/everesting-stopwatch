@@ -21,7 +21,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnReset = document.getElementById('btn-reset');
     
     if (btnStart) {
-        btnStart.addEventListener('click', createTripleClickHandler('start', startTimers));
+        // Пуск - одним нажатием
+        btnStart.addEventListener('click', function() {
+            if (!isRunning) {
+                // Первое нажатие - запуск
+                startTimers();
+            } else {
+                // Последующие нажатия - круг (тройное нажатие)
+                createTripleClickHandler('start', startTimers)();
+            }
+        });
         console.log('✅ Обработчик Пуск установлен');
     }
     
