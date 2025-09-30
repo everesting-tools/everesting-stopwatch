@@ -10,7 +10,7 @@ let totalPauseElapsed = 0; // Суммарное время всех пауз
 let currentLapPause = 0;   // Пауза в текущем круге
 let isRunning = false;
 let isPaused = false;
-let lapCount = 0;
+let lapCount = 0;          // Количество завершенных кругов
 
 // Массивы данных
 let lapsData = [];
