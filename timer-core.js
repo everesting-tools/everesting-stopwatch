@@ -43,6 +43,15 @@ function startTimers() {
         lapStartTime = now;
         isRunning = true;
         lapCount = 0;
+
+// Скрываем инструкцию при старте
+const instructions = document.querySelector('.instructions');
+const btnInstructions = document.querySelector('.toggle-instructions');
+if (instructions.style.display === 'block') {
+    instructions.style.display = 'none';
+    btnInstructions.textContent = 'Инструкция';
+    btnInstructions.classList.remove('active');
+}
         
         // Показываем только нужные кнопки
         document.getElementById('btn-start').style.display = 'inline-block';
