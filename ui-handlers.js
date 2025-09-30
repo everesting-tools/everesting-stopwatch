@@ -51,19 +51,26 @@ function createTripleClickHandler(type, actionFunction) {
     };
 }
 
-// Функция переключения таблицы
-function toggleTable() {
-    const tableContainer = document.getElementById('table-container');
-    const btnTable = document.querySelector('.toggle-table');
+// Функция переключения инструкции
+function toggleInstructions() {
+    const instructions = document.querySelector('.instructions');
+    const btnInstructions = document.querySelector('.toggle-instructions');
     
-    if (tableContainer.style.display === 'none' || !tableContainer.style.display) {
-        tableContainer.style.display = 'block';
-        btnTable.textContent = 'Скрыть таблицу';
-        btnTable.classList.add('active');
+    if (!instructions || !btnInstructions) {
+        console.error('❌ Элементы инструкции не найдены');
+        return;
+    }
+    
+    if (instructions.style.display === 'none' || !instructions.style.display) {
+        instructions.style.display = 'block';
+        btnInstructions.textContent = 'Скрыть инструкцию';
+        btnInstructions.classList.add('active');
+        console.log('✅ Инструкция показана');
     } else {
-        tableContainer.style.display = 'none';
-        btnTable.textContent = 'Таблица';
-        btnTable.classList.remove('active');
+        instructions.style.display = 'none';
+        btnInstructions.textContent = 'Инструкция';
+        btnInstructions.classList.remove('active');
+        console.log('✅ Инструкция скрыта');
     }
 }
 
