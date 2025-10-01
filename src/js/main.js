@@ -1,3 +1,4 @@
+console.log("✅ main.js загружен");
 import { UIController } from './modules/UIController.js';
 import { Stopwatch } from './modules/Stopwatch.js';
 
