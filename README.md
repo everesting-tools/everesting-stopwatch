@@ -49,12 +49,14 @@
 ## 📁 Структура проекта
 
 ```everesting-stopwatch/ ├──index.html          # Главная страница 
-├──style.css          # Стили
-├──CNAME              #
-├──404.html           # Страница перенаправления 
-├──README.md          # Документация 
-├──LICENSE            # Лицензия MIT 
-└──.gitignore         # Игнорируемые файлы
+├──style.css
+├──src/
+├── js/
+│   ├── main.js
+│   └── modules/
+│       ├── Stopwatch.js
+│       ├── UIController.js
+│       └── LocalStorageManager.js
 
 ```
 
