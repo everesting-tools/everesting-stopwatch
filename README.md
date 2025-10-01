@@ -49,16 +49,17 @@
 ## 📁 Структура проекта
 ```
 
-everesting-stopwatch/
-├──index.html          # Главная страница
-├──style.css
-├──src/
-├── js/
-│   ├── main.js
-│   └── modules/
-│       ├── Stopwatch.js
-│       ├── UIController.js
-│       └── LocalStorageManager.js
+📁 everesting-stopwatch/
+├── index.html          # Главная страница
+├── src/
+│   ├── css/
+│   │   └── styles.css # Стили
+│   └── js/
+│       ├── main.js
+│       └── modules/
+│           ├── UIController.js
+│           ├── Stopwatch.js
+│           └── AudioManager.js
 
 ```
 
