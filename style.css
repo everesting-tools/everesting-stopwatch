@@ -280,3 +280,18 @@ tr:nth-child(even) {
     color: #3498db;
     font-weight: bold;
 }
+
+/* Стиль заголовков таблиц */
+#lapsTableContainer h3,
+#summaryTableContainer h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Кнопка экспорта */
+.btn.export {
+    background-color: #607d8b;
+    color: white;
+}
+
