@@ -1,147 +1,155 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
+    <title>Everesting Stopwatch</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Секундомер для эверестинга</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="src/css/main.css?v=31">
+    <link rel="stylesheet" href="src/css/table.css?v=31">
+    
+    <style>
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 40px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 32px;
+    width: 32px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(40px);
+}
+</style>
+    
 </head>
 <body>
-    <div class="header">
-        <h1>Секундомер для эверестинга</h1>
-        <div class="header-controls">
-            <button class="toggle-instructions">Инструкция</button>
-            <button class="toggle-table">Таблица</button>
+    <!-- Неподвижная шапка -->
+    <div class="header-fixed">
+        <div class="header-top">
+            <button id="toggleSettings" class="btn-flat">Настройки</button>
+            <button id="toggleInstruction" class="btn-flat">Инструкция</button>
+            <button id="toggleTable" class="btn-flat">Таблица</button>
         </div>
+        <h1 class="title">Секундомер для Everesting</h1>
     </div>
-    
-<div class="instructions">
-    <div class="instructions-content">
-        <h3>Инструкция:</h3>
-        <ul>
-            <li><strong>Пуск</strong> - запускает отсчёт (тройное нажатие)</li>
-            <li><strong>Круг</strong> - фиксирует время круга и начинает новый (тройное нажатие)</li>
-            <li><strong>Пауза</strong> - включает/выключает паузу (тройное нажатие)</li>
-            <li><strong>Финиш</strong> - останавливает все секундомеры и показывает итоги (тройное нажатие)</li>
-            <li><strong>Сброс</strong> - очищает все данные (тройное нажатие)</li>
-            <li><strong>Инструкция</strong> - показывает/скрывает эту инструкцию</li>
-            <li><strong>Таблица</strong> - показывает/скрывает таблицу результатов</li>
-        </ul>
-        
-        <div class="everesting-info">
-            <h3>🏔️ Что такое эверестинг?</h3>
-            <p><strong>Эверестинг</strong> - это преодоление на велосипеде высоты, равной высоте Эвереста (8848 метров) за одну тренировку.</p>
-            <p>Каждый круг включает подъем и спуск. Это экстремальная велодисциплина!</p>
+
+    <!-- Общая обёртка -->
+    <div class="wrapper">
+        <!-- Основной контент -->
+        <div class="main-content" id="mainContent">
+            <div class="container">
+                <div id="instruction" class="instruction hidden">
+                    <p>Инструкция: Нажмите "Старт", чтобы начать. Используйте "Lap" для фиксации кругов, "Pause" для пауз, "Finish" для завершения.</p>
+                </div>
+
+                <div id="time" class="hidden">00:00:00</div>
+
+                <button id="start" class="btn-start">START</button>
+
+                <div id="activeControls" class="control-group hidden">
+                    <button id="lap" class="btn-lap">LAP</button>
+                    <button id="pause" class="btn-pause">PAUSE</button>
+                    <button id="finish" class="btn-finish">FINISH</button>
+                </div>
+
+                <button id="reset" class="btn-reset hidden">RESET</button>
+            </div>
         </div>
+
+        <!-- Боковая панель с таблицей (справа) -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>Результаты по кругам</h3>
+                <button id="closeTable" class="btn-close">×</button>
+            </div>
+            <div class="table-container">
+                <table id="lapsTable">
+                    <thead>
+                        <tr>
+                            <th>Круг</th>
+                            <th>Время</th>
+                            <th>Паузы</th>
+                            <th>Общее</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lapsTableBody">
+                        <!-- Заполняется динамически -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Панель настроек (слева) -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <h3>Настройки</h3>
+                <button id="closeSettings" class="btn-close">×</button>
+            </div>
+            <div class="settings-content">
+
+                <!-- Переключатель темы -->
+                <div class="setting-item">
+    <label class="theme-label">Тема / Theme</label>
+    <div class="toggle-switch">
+        <input type="checkbox" id="themeToggle">
+        <span class="slider"></span>
+    </div>
+    <div class="theme-labels">
+        <span class="theme-light">Светлая</span>
+        <span class="theme-dark">Тёмная</span>
     </div>
 </div>
-    
-    <div class="timer-display">
-        <div>Общее время: <span id="total-time">00:00:00</span></div>
-        <div>Текущий круг <span id="current-lap">0</span>: <span id="lap-time">00:00:00</span></div>
-        <div>Сумма пауз: <span id="pause-time">00:00:00</span></div>
-    </div>
-    
-    <div class="status-indicator">
-        <div class="status-item">
-            <div class="status-dot stopped" id="total-status"></div>
-            <span>Общее время</span>
-        </div>
-        <div class="status-item">
-            <div class="status-dot stopped" id="lap-status"></div>
-            <span>Текущий круг</span>
-        </div>
-        <div class="status-item">
-            <div class="status-dot stopped" id="pause-status"></div>
-            <span>Пауза</span>
-        </div>
-    </div>
-    
-    <div class="controls">
-        <button id="btn-start" class="btn-start">Пуск</button>
-        <button id="btn-pause" class="btn-pause" style="display: none;">Пауза</button>
-        <button id="btn-finish" class="btn-finish" style="display: none;">Финиш</button>
-        <button id="btn-reset" class="btn-reset" style="display: none;">Сброс</button>
-    </div>
-    
-    <div id="start-indicator" class="action-indicator" style="display: none;">
-        Нажмите еще <span id="start-count">2</span> раза для старта
-    </div>
-    
-    <div id="pause-indicator" class="action-indicator" style="display: none;">
-        Нажмите еще <span id="pause-count">2</span> раза для паузы
-    </div>
-    
-    <div id="finish-indicator" class="action-indicator" style="display: none;">
-        Нажмите еще <span id="finish-count">2</span> раза для финиша
-    </div>
-    
-    <div id="reset-indicator" class="action-indicator" style="display: none;">
-        Нажмите еще <span id="reset-count">2</span> раза для сброса
-    </div>
-    
-    <div id="table-container" class="table-container">
-        <table id="results-table">
-            <thead>
-                <tr>
-                    <th>Круг</th>
-                    <th>Время круга</th>
-                    <th>Пауза в круге</th>
-                    <th>Чистое время</th>
-                    <th>Общее время</th>
-                </tr>
-            </thead>
-            <tbody id="results-body">
-            </tbody>
-        </table>
-    </div>
 
-    <div id="summary" class="summary" style="display: none;">
-        <h2>Итоги тренировки</h2>
-        <div class="summary-grid" id="summary-content">
+                <!-- Переключатель языка -->
+                <div class="setting-item">
+    <label class="language-label">Язык / Language</label>
+    <div class="toggle-switch">
+        <input type="checkbox" id="languageToggle">
+        <span class="slider"></span>
+    </div>
+    <div class="language-labels">
+        <span class="lang-ru">Русский</span>
+        <span class="lang-en">English</span>
+    </div>
+</div>
+            </div>
         </div>
     </div>
 
-
-    <script type="module" src="ui-handlers.js"></script>
     <script type="module" src="src/js/main.js"></script>
-    <script src="https://everesting-tools.github.io/stopwatch/config.js"></script>
-    <script src="https://everesting-tools.github.io/stopwatch/timer-core.js"></script>
-<script>
-// timer-core.js - встроенная версия
-console.log('✅ timer-core loaded inline');
 
-function formatTime(ms) {
-    const hours = Math.floor(ms / 3600000);
-    const minutes = Math.floor((ms % 3600000) / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-}
-
-function updateDisplays() {
-    console.log('updateDisplays');
-}
-
-function startTimers() {
-    console.log('✅ startTimers called');
-    // временная заглушка
-}
-
-function togglePause() {
-    console.log('⏸️ togglePause called');
-}
-
-function finishTimers() {
-    console.log('🏁 finishTimers called');
-}
-
-function resetTimers() {
-    console.log('🔄 resetTimers called');
-}
-</script>
-<!-- В конец <body> -->
-<div style="position: fixed; top: 10px; right: 10px; background: #ffeb3b; padding: 8px; border-radius: 4px; z-index: 9999; font-weight: bold;">
-  🚀 Версия: modular-refactor
-</div>
 </body>
 </html>
