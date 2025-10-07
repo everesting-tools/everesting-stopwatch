@@ -1,0 +1,336 @@
+/* src/css/main.css
+
+Сброс и базовые настройки */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 10px;
+    min-height: 100vh;
+}
+
+/* Фиксированная шапка */
+.header-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #f5f5f5;
+    padding: 10px;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between; /* ← Максимально раздвинутые кнопки */
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 10px;
+}
+
+.header-top .btn-flat {
+    background: transparent;
+    border: none;
+    color: #607D8B;
+    font-size: 1.1rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    outline: none;
+}
+
+.header-top .btn-flat:hover {
+    color: #455A64;
+    text-decoration: underline;
+}
+
+.header-fixed .title {
+    font-size: 2.5rem;
+    margin: 0;
+    color: #333;
+    text-align: center;
+    width: 100%;
+    line-height: 1.3;
+    margin-top: 10px;
+}
+
+/* Общая обёртка */
+.wrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    padding-top: 160px; /* ← Увеличенный отступ под шапку */
+}
+
+/* Основной контент */
+.main-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+/* Сдвиг для таблицы (вправо) */
+.main-content.shifted-table {
+    transform: translateX(-100vw);
+}
+
+/* Сдвиг для настроек (влево) */
+.main-content.shifted-settings {
+    transform: translateX(100vw);
+}
+
+/* Инструкция */
+.instruction {
+    background: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 30px;
+    margin: 30px auto;
+    max-width: 90%;
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Все кнопки — почти круглые */
+button {
+    font-size: 1.4rem;
+    padding: 25px 20px;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    display: block;
+    margin: 20px auto;
+    width: 65%;
+    max-width: 260px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    font-weight: bold;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+}
+
+.btn-start { background-color: #2196F3; }
+.btn-start:hover { background-color: #1976D2; }
+
+.btn-lap { background-color: #FF9800; }
+.btn-lap:hover { background-color: #F57C00; }
+
+.btn-pause { background-color: #9C27B0; }
+.btn-pause:hover { background-color: #7B1FA2; }
+
+.btn-finish { background-color: #F44336; }
+.btn-finish:hover { background-color: #D32F2F; }
+
+.btn-reset { background-color: #607D8B; }
+.btn-reset:hover { background-color: #455A64; }
+
+/* Скрытие элементов */
+.hidden {
+    display: none !important;
+}
+
+/* Время */
+#time {
+    font-size: 2.8rem;
+    font-weight: bold;
+    margin: 30px auto;
+    color: #333;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Панель настроек */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    left: -100vw; /* ← Начинается ЗА левым краем */
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    z-index: 30;
+    padding: 80px 20px 20px 20px;
+    overflow-y: auto;
+}
+
+.settings-panel.open {
+    transform: translateX(100vw); /* ← Въезжает слева */
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #9E9E9E;
+}
+
+.btn-close:hover {
+    color: #F44336;
+}
+
+
+
+
+/* Элементы настроек */
+.setting-item {
+    margin: 40px 0;
+    text-align: center;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    color: #333;
+}
+
+/* Переключатель */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 40px;
+    margin: 10px auto;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 32px;
+    width: 32px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(40px);
+}
+
+/* Подписи к переключателям */
+.language-labels,
+.theme-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.lang-ru, .theme-light {
+    font-weight: bold;
+    color: #333;
+}
+
+input:checked ~ .language-labels .lang-ru,
+input:checked ~ .theme-labels .theme-light {
+    font-weight: normal;
+    color: #aaa;
+}
+
+input:checked ~ .language-labels .lang-en,
+input:checked ~ .theme-labels .theme-dark {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Тёмная тема */
+.dark-theme {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+    --border-color: #333;
+}
+
+.dark-theme,
+.dark-theme body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.dark-theme .container,
+.dark-theme .instruction,
+.dark-theme .sidebar,
+.dark-theme .settings-panel,
+.dark-theme #time {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.dark-theme .title,
+.dark-theme .btn-flat,
+.dark-theme .language-label,
+.dark-theme .theme-label,
+.dark-theme .language-labels,
+.dark-theme .theme-labels {
+    color: var(--text-color);
+}
+
+.dark-theme .btn-start { background-color: #1976D2; }
+.dark-theme .btn-lap { background-color: #F57C00; }
+.dark-theme .btn-pause { background-color: #7B1FA2; }
+.dark-theme .btn-finish { background-color: #D32F2F; }
+.dark-theme .btn-reset { background-color: #455A64; }
+
+.dark-theme .header-fixed {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
